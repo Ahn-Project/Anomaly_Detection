@@ -45,7 +45,7 @@ data_transforms = {
 }
 
 
-root_dir = './data/DAGM 2007 Dataset/normal/'
+root_dir = './data/DAGM2007/normal/'
 dataset = {x : datasets.ImageFolder(os.path.join(root_dir, x),
                                     transform = data_transforms[x]) for x in ['train','val']}
 

@@ -32,7 +32,7 @@ data_transforms = transforms.Compose([
                     ])
 
 
-root_dir = './data/DAGM 2007 Dataset/abnormal/'
+root_dir = './data/DAGM2007/abnormal/'
 dataset = datasets.ImageFolder(os.path.join(root_dir, 'val'),
                                 transform = data_transforms)
 
