@@ -164,7 +164,7 @@ if __name__ == '__main__':
       # print(fvs_60000.shape)
       # print(label_60000.shape)
 
-      fvs_save_path = './fvs_clustering/'
+      fvs_save_path = './fvs/'
       dir_path = fvs_save_path + '2classes_classifier_(using_Normal)_{}'.format(version)
       if not os.path.isdir(dir_path):
           os.mkdir(dir_path)

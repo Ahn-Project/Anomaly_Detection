@@ -126,7 +126,7 @@ if __name__ == "__main__":
       fvs_array = np.array(fvs_list[:])
       label_array = np.array(label_item[:])
 
-      fvs_save_path = './fvs_clustering/'
+      fvs_save_path = './fvs/'
       dir_path = fvs_save_path + '2classes_classifier_(using_Normal)_{}'.format(version)
       if not os.path.isdir(dir_path):
           os.mkdir(dir_path)
