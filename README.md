@@ -41,18 +41,18 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
         (https://github.com/Ahn-Project/Anomaly_Detection/blob/dagm2007/data/DAGM2007.zip)
 
 2. 특성 벡터 추출
-  - DAGM2007의 정상 데이터만 사용할 경우,
-    'train_normal.py' 실행한 다음, 저장된 weight를 load하여 'train_abnormal.py' 실행
+    - DAGM2007의 정상 데이터만 사용할 경우,
+     'train_normal.py' 실행한 다음, 저장된 weight를 load하여 'train_abnormal.py' 실행
     
-  - DAGM2007의 정상, 비정상 데이터 모두 사용할 경우,
-    'train_4classes.py' 실행
+    - DAGM2007의 정상, 비정상 데이터 모두 사용할 경우,
+     'train_4classes.py' 실행
 
 3. 이미지 임베딩 및 시각화 / 유사도 측정
-  - DAGM2007의 정상 데이터만 사용할 경우,
-    'similarity_DAGM2007.py' 실행
+    - DAGM2007의 정상 데이터만 사용할 경우,
+      'similarity_DAGM2007.py' 실행
     
-  - DAGM2007의 정상, 비정상 데이터 모두 사용할 경우,
-    'similarity_4classes_DAGM2007.py' 실행
+    - DAGM2007의 정상, 비정상 데이터 모두 사용할 경우,
+      'similarity_4classes_DAGM2007.py' 실행
 
 
 ## Members
