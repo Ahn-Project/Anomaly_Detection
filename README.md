@@ -27,8 +27,8 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 ## Process
 1. Data Preparation
 2. Feature Vector Extraction
-  - using only normal data
-  - using normal and abnormal data
+    - using only normal data
+    - using normal and abnormal data
 3. Embedding 
 4. Visualization 
 5. Measuring similarity
