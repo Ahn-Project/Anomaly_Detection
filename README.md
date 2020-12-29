@@ -12,7 +12,7 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 
 ### Methods Used
 * CNN (Resnet18)
-* t-NSE
+* t-SNE
 * similarity measures (Euclidean distance)
 * Data Visualization (scatter plot)
 * etc. 
