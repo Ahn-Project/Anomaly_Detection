@@ -49,12 +49,12 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 ##########################################################
 def load_model(wts_name):
-      weights_path = './weights/' + wts_name 
-      model = resnet.resnet18(pretrained = False)
-      num_ftrs = model.fc.in_features
-      model.fc = nn.Linear(num_ftrs, 2)
-      model.load_state_dict(torch.load(weights_path))
-      return model
+    weights_path = './weights/' + wts_name
+    model = resnet.resnet18(pretrained = False)
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, 2)
+    model.load_state_dict(torch.load(weights_path))
+    return model
 
 def test(model, testLoader):
     correct = 0
@@ -95,45 +95,47 @@ def test(model, testLoader):
     return accuracy, fvs, label_epoch
 
 
-
-
 ##########################################################
 ### weight Downloading: "https://download.pytorch.org/models/resnet18-5c106cde.pth" to C:\Users\neouly08/.cache\torch\hub\checkpoints\resnet18-5c106cde.pth
 
 
-
 if __name__ == "__main__":
-      version = 'ver4'
+    version = '1'
+    num_epochs = 5
 
-      # load model
-      wts_name = 'weights_2classes_{} (epochs=5).pth'.format(version)
-      model = load_model(wts_name)
-      model.eval()
-      # print(model)
+    # load model
+    wts_name = 'weights_normal_ver{} (epochs={}).pth'.format(version, num_epochs)
+    model = load_model(wts_name)
+    model.eval()
+    # print(model)
 
-      if torch.cuda.is_available():
-          model.cuda()
+    if torch.cuda.is_available():
+      model.cuda()
 
-      # test
-      accuracy, fvs, label_epoch = test(model, testloader)
+    # test
+    accuracy, fvs, label_epoch = test(model, testloader)
 
+    ################
+    # fvs 저장
+    fvs_list = list(map(lambda x: fvs[x].tolist(), range(len(fvs))))  # 추가 부분
+    label_item = list(map(lambda x: label_epoch[x].item(), range(len(label_epoch))))  # 추가 부분
 
-      ### 추가 부분 (for clustering)
-      fvs_list = list(map(lambda x: fvs[x].tolist(), range(len(fvs))))  # 추가 부분
-      label_item = list(map(lambda x: label_epoch[x].item(), range(len(label_epoch))))  # 추가 부분
+    fvs_array = np.array(fvs_list[:])
+    label_array = np.array(label_item[:])
 
-      # 추가 부분
-      fvs_array = np.array(fvs_list[:])
-      label_array = np.array(label_item[:])
+    fvs_save_path = './fvs/'
+    dir_path = fvs_save_path + 'fvs_normal_ver{}'.format(version)
+    if not os.path.isdir(dir_path):
+      os.mkdir(dir_path)
 
-      fvs_save_path = './fvs/'
-      dir_path = fvs_save_path + '2classes_classifier_(using_Normal)_{}'.format(version)
-      if not os.path.isdir(dir_path):
-          os.mkdir(dir_path)
+    np.save(os.path.join(dir_path, 'fvs_DAGM2007_abnormal_ver{}'.format(version)), fvs_array)
+    np.save(os.path.join(dir_path, 'label_DAGM2007_abnormal_ver{}'.format(version)), label_array)
 
-      np.save(os.path.join(dir_path, 'fvs_DAGM2007_abnormal_{}'.format(version)), fvs_array)
-      np.save(os.path.join(dir_path, 'label_DAGM2007_abnormal_{}'.format(version)), label_array)
+    ################
+    # label
+    class_names_df = pd.DataFrame(class_names, columns=['label'])
+    x = pd.read_csv(os.path.join(dir_path, 'class_names.csv'))
+    x2 = pd.concat([x, class_names_df])
+    x2.to_csv(os.path.join(dir_path, 'class_names.csv'), index=False)
 
-      # np.save(fvs_save_path + 'fvs_DAGM2007_abnormal_{}'.format(version), fvs_array)
-      # np.save(fvs_save_path + 'label_DAGM2007_abnormal_{}'.format(version), label_array)
 

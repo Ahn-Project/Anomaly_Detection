@@ -62,67 +62,67 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 ##########################################################
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
-  since = time.time()
+    since = time.time()
 
-  best_model_wts = copy.deepcopy(model.state_dict()) 
-  best_acc = 0.0
+    best_model_wts = copy.deepcopy(model.state_dict())
+    best_acc = 0.0
 
-  fvs,label_epoch = [],[]  # 추가 부분
-  for epoch in range(num_epochs):
-    for phase in ['train', 'val']:
-      if phase == 'train':
-        model.train()
-      else:
-        model.eval()
+    fvs,label_epoch = [],[]  # 추가 부분
+    for epoch in range(num_epochs):
+        for phase in ['train', 'val']:
+              if phase == 'train':
+                model.train()
+              else:
+                model.eval()
 
-      running_loss = 0.0
-      running_correct = 0
-      for inputs, labels in data_loader[phase]:
-        inputs = inputs.to(device)
-        labels = labels.to(device)
+              running_loss = 0.0
+              running_correct = 0
+              for inputs, labels in data_loader[phase]:
+                    inputs = inputs.to(device)
+                    labels = labels.to(device)
 
-        optimizer.zero_grad()
-        with torch.set_grad_enabled(phase=='train'):
-          outputs,fv = model(inputs)  # 수정 부분
-          _, preds = torch.max(outputs, 1)
-          loss = criterion(outputs, labels)
-          if phase == 'val' and 1<=epoch<3:
-            fvs.extend(fv) # 추가 부분
-            label_epoch.extend(labels) # 추가 부분
+                    optimizer.zero_grad()
+                    with torch.set_grad_enabled(phase=='train'):
+                      outputs,fv = model(inputs)  # 수정 부분
+                      _, preds = torch.max(outputs, 1)
+                      loss = criterion(outputs, labels)
+                      if phase == 'val' and 1<=epoch<3:
+                        fvs.extend(fv) # 추가 부분
+                        label_epoch.extend(labels) # 추가 부분
 
-          if phase == 'train':
-            loss.backward()
-            optimizer.step()
+                      if phase == 'train':
+                        loss.backward()
+                        optimizer.step()
 
-        running_loss += loss.item()*inputs.size(0)
-        running_correct += torch.sum(preds==labels.data)
+                    running_loss += loss.item()*inputs.size(0)
+                    running_correct += torch.sum(preds==labels.data)
 
-      if phase == 'train':
-        scheduler.step()
+              if phase == 'train':
+                scheduler.step()
 
-      epoch_loss = running_loss / dataset_sizes[phase]
-      epoch_acc = running_correct / dataset_sizes[phase]
+              epoch_loss = running_loss / dataset_sizes[phase]
+              epoch_acc = running_correct / dataset_sizes[phase]
 
-      print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-              phase, epoch_loss, epoch_acc))
-      
-      if phase == 'val' and epoch_acc > best_acc:
-        best_acc = epoch_acc
-        best_model_wts = copy.deepcopy(model.state_dict())
+              print('{} Loss: {:.4f} Acc: {:.4f}'.format(
+                      phase, epoch_loss, epoch_acc))
+
+              if phase == 'val' and epoch_acc > best_acc:
+                best_acc = epoch_acc
+                best_model_wts = copy.deepcopy(model.state_dict())
     print()
 
-  time_elapsed = time.time() - since
-  print('Training complete in {:.0f}m {:.0f}s'.format(
+    time_elapsed = time.time() - since
+    print('Training complete in {:.0f}m {:.0f}s'.format(
       time_elapsed // 60, time_elapsed % 60))
-  print('Best val Acc: {:4f}'.format(best_acc))
+    print('Best val Acc: {:4f}'.format(best_acc))
 
-  # 가장 나은 모델 가중치를 불러옴
-  model.load_state_dict(best_model_wts)
-  return model, best_acc, fvs, label_epoch
+    # 가장 나은 모델 가중치를 불러옴
+    model.load_state_dict(best_model_wts)
+    return model, best_acc, fvs, label_epoch
 
 def run():
-      torch.multiprocessing.freeze_support()
-      print('loop')
+    torch.multiprocessing.freeze_support()
+    print('loop')
 
 
 ##########################################################
@@ -141,37 +141,36 @@ optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
 if __name__ == '__main__':
-      version = 'ver4'
+    version = 1   # 조정 부분
 
-      run()
-      num_epochs = 5
-      model_ft, best_acc, fvs, label_epoch = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=num_epochs)
-      
-      wts_save_path = './weights/'
-      torch.save(model_ft.state_dict(), wts_save_path+'weights_2classes_{} (epochs={}).pth'.format(version, num_epochs))
+    run()
+    num_epochs = 5    # 조정 부분
+    model_ft, best_acc, fvs, label_epoch = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=num_epochs)
 
-      ##########################################################
-      ### 추가 부분 (for clustering)
-      fvs_list = list(map(lambda x: fvs[x].tolist(), range(len(fvs))))  # 추가 부분
-      label_item = list(map(lambda x: label_epoch[x].item(), range(len(label_epoch))))  # 추가 부분
-      # print(fvs_array[0])
-      # print(label_item[:20])
+    ################
+    # weight 저장
+    wts_save_path = './weights/'
+    torch.save(model_ft.state_dict(), wts_save_path+'weights_normal_ver{} (epochs={}).pth'.format(version, num_epochs))
 
-      # 추가 부분
-      fvs_array = np.array(fvs_list[:])
-      label_array = np.array(label_item[:])
-      # print(fvs_60000[0])
-      # print(fvs_60000.shape)
-      # print(label_60000.shape)
+    ################
+    # fvs 저장
+    fvs_list = list(map(lambda x: fvs[x].tolist(), range(len(fvs))))  # 추가 부분
+    label_item = list(map(lambda x: label_epoch[x].item(), range(len(label_epoch))))  # 추가 부분
 
-      fvs_save_path = './fvs/'
-      dir_path = fvs_save_path + '2classes_classifier_(using_Normal)_{}'.format(version)
-      if not os.path.isdir(dir_path):
-          os.mkdir(dir_path)
+    fvs_array = np.array(fvs_list[:])
+    label_array = np.array(label_item[:])
 
-      np.save(os.path.join(dir_path, 'fvs_DAGM2007_{}'.format(version)), fvs_array)
-      np.save(os.path.join(dir_path, 'label_DAGM2007_{}'.format(version)), label_array)
+    fvs_save_path = './fvs/'
+    dir_path = fvs_save_path + 'fvs_normal_ver{}'.format(version)
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
 
-      # np.save(fvs_save_path + 'fvs_DAGM2007_{}'.format(version), fvs_array)
-      # np.save(fvs_save_path + 'label_DAGM2007_{}'.format(version), label_array)
+    np.save(os.path.join(dir_path, 'fvs_DAGM2007_ver{}'.format(version)), fvs_array)
+    np.save(os.path.join(dir_path, 'label_DAGM2007_ver{}'.format(version)), label_array)
+
+    ################
+    # label 저장
+    class_names_df = pd.DataFrame(class_names, columns=['label'])
+    class_names_df.to_csv(os.path.join(dir_path, 'class_names.csv'), index=False)
+
 
