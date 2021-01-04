@@ -32,6 +32,9 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 5. Visualization 
 
 ## Usage
+
+    (*** 2,3번 python 파일 내 version 변수 일치 필요)
+    
 1. 데이터 준비
 
     1.1 다운로드 (https://conferences.mpi-inf.mpg.de/dagm/2007/prizes.html)
@@ -42,18 +45,16 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 
 2. 특성 벡터 추출
 
-    (*** 파일 내 version 변수 일치 필요)
-
     2.1 'train.py' 실행 (python3 train.py)
      
     2.2 'fvs_query.py' 실행 (python3 fvs_query.py)
     
 
 3. 이미지 임베딩 및 유사도 측정 / 시각화
-
-    (*** 파일 내 version 변수 일치 필요)
       
       'main.py' 실행    (python3 main.py)
+
+
 
 
 ## Members
