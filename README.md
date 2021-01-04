@@ -14,7 +14,7 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 * CNN (Resnet18)
 * t-SNE
 * similarity measures (Euclidean distance)
-* Data Visualization (scatter plot)
+* Data Visualization (scatter plot, boxplot)
 * etc. 
 
 ### Technologies
@@ -27,11 +27,9 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 ## Process
 1. Data Preparation
 2. Feature Vector Extraction
-    - using only normal data
-    - using normal and abnormal data
 3. Embedding 
-4. Visualization 
-5. Measuring similarity
+4. Measuring similarity
+5. Visualization 
 
 ## Usage
 1. 데이터 준비
@@ -43,18 +41,14 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
         (https://github.com/Ahn-Project/Anomaly_Detection/blob/dagm2007/data/DAGM2007.zip)
 
 2. 특성 벡터 추출
-    - DAGM2007의 정상 데이터만 사용할 경우,
-     'train_normal.py' 실행한 다음, 저장된 weight를 load하여 'train_abnormal.py' 실행
-    
-    - DAGM2007의 정상, 비정상 데이터 모두 사용할 경우,
-     'train_4classes.py' 실행
 
-3. 이미지 임베딩 및 시각화 / 유사도 측정
-    - DAGM2007의 정상 데이터만 사용할 경우,
-      'similarity_DAGM2007.py' 실행
-    
-    - DAGM2007의 정상, 비정상 데이터 모두 사용할 경우,
-      'similarity_4classes_DAGM2007.py' 실행
+    2.1 'train.py' 실행 (python3 train.py)
+     
+    2.2 'fvs_query.py' 실행 (python3 fvs_query.py)
+
+3. 이미지 임베딩 및 유사도 측정 / 시각화
+      
+      'main.py' 실행    (python3 main.py)
 
 
 ## Members
