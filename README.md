@@ -17,12 +17,15 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 * Data Visualization (scatter plot, boxplot)
 * etc. 
 
-### Technologies
-* Python
-* Pytorch
-* Pandas, Numpy
-* sklearn
-* etc. 
+### Dependencies
+* matplotlib==3.3.3
+* numpy==1.19.4
+* pandas==1.1.5
+* scikit-learn==0.19.1
+* scipy==1.5.4
+* torch==1.7.1+cu101
+* torchvision==0.8.2+cu101
+
 
 ## Process
 1. Data Preparation
