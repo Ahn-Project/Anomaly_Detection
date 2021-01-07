@@ -22,13 +22,40 @@ import matplotlib.pyplot as plt
 import time
 import os
 import copy
-
-
-
+import argparse
 
 
 ##########################################################
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def load_data(arg_data):
+    # real image 데이터 로드
+    data_transforms = {
+        'train': transforms.Compose([
+            transforms.Resize(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            # transforms.RandomRotation([45,90,180,270]),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ]),
+        'val': transforms.Compose([
+            transforms.Resize(224),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+    }
+
+    root_dir = './data/DAGM2007/{}/'.format(arg_data)
+    dataset = {x: datasets.ImageFolder(os.path.join(root_dir, x),
+                                       transform=data_transforms[x]) for x in ['train', 'val']}
+
+    data_loader = {x: torch.utils.data.DataLoader(dataset[x],
+                                                  batch_size=4,
+                                                  shuffle=True,
+                                                  num_workers=4) for x in ['train', 'val']}
+    return dataset, data_loader
+
+
+def train_model(data_loader, model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -100,33 +127,21 @@ if __name__ == '__main__':
     version = 1  # 조정 부분
     run()
     num_epochs = 5  # 조정 부분
-    n_classes = 4   # 조정 부분
 
-    # real image 데이터 로드
-    data_transforms = {
-        'train': transforms.Compose([
-            transforms.Resize(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
-            # transforms.RandomRotation([45,90,180,270]),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]),
-        'val': transforms.Compose([
-            transforms.Resize(224),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-    }
+    # parser 생성
+    parser = argparse.ArgumentParser()
 
-    root_dir = './data/DAGM2007/normal_and_abnormal/'
-    dataset = {x: datasets.ImageFolder(os.path.join(root_dir, x),
-                                       transform=data_transforms[x]) for x in ['train', 'val']}
+    # 인자 조건 추가
+    parser.add_argument('--data', type=str, default='both',
+                        choices=['both', 'normal'],
+                        help='what is the data needed in your task?')
 
-    data_loader = {x: torch.utils.data.DataLoader(dataset[x],
-                                                  batch_size=4,
-                                                  shuffle=True,
-                                                  num_workers=4) for x in ['train', 'val']}
+    # parsing 후 저장
+    args = parser.parse_args()
+    arg_data = args.data
+
+    # 데이터 로드
+    dataset, data_loader = load_data(arg_data)
 
     dataset_sizes = {x: len(dataset[x]) for x in ['train', 'val']}
     class_names = dataset['train'].classes
@@ -134,6 +149,10 @@ if __name__ == '__main__':
 
     #######################################
     # 모델 학습
+    if arg_data == 'both':
+        n_classes = 4
+    else:
+        n_classes = 2
     model_ft = resnet.resnet18(pretrained=True)
     num_ftrs = model_ft.fc.in_features
     model_ft.fc = nn.Linear(num_ftrs, n_classes)
@@ -143,13 +162,13 @@ if __name__ == '__main__':
     optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
     exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
-    model_ft, best_acc, fvs, label_epoch = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
+    model_ft, best_acc, fvs, label_epoch = train_model(data_loader, model_ft, criterion, optimizer_ft, exp_lr_scheduler,
                                                        num_epochs=num_epochs)
 
     ################
     # weight 저장
     wts_save_path = './weights/'
-    torch.save(model_ft.state_dict(), wts_save_path+'weights_both_ver{} (epochs={}).pth'.format(version, num_epochs))
+    torch.save(model_ft.state_dict(), wts_save_path+'weights_{}_ver{} (epochs={}).pth'.format(arg_data, version, num_epochs))
 
     ################
     # fvs 저장
@@ -160,12 +179,12 @@ if __name__ == '__main__':
     label_array = np.array(label_item[:])
 
     fvs_save_path = './fvs/'
-    dir_path = fvs_save_path + 'fvs_both_ver{}'.format(version)
+    dir_path = fvs_save_path + 'fvs_{}_ver{}'.format(arg_data, version)
     if not os.path.isdir(dir_path):
         os.mkdir(dir_path)
 
-    np.save(os.path.join(dir_path, 'fvs_both_ver{}'.format(version)), fvs_array)
-    np.save(os.path.join(dir_path, 'label_both_ver{}'.format(version)), label_array)
+    np.save(os.path.join(dir_path, 'fvs_{}_ver{}'.format(arg_data, version)), fvs_array)
+    np.save(os.path.join(dir_path, 'label_{}_ver{}'.format(arg_data, version)), label_array)
 
     ################
     # label 저장

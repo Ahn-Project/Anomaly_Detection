@@ -11,20 +11,15 @@ Original file is located at
 from model import resnet
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.optim import lr_scheduler
 import numpy as np
 import pandas as pd
-import torchvision
 from torchvision import datasets, models, transforms
-import matplotlib.pyplot as plt
 import os
-import copy
+import argparse
 
 
 ##########################################################
-def data_load(root_dir):
-    # abnormal image 데이터 로드
+def load_data(root_dir):
     data_transforms = transforms.Compose([
         transforms.Resize(224),
         transforms.ToTensor(),
@@ -80,57 +75,61 @@ def test(model, testLoader):
 
 
 if __name__ == "__main__":
-    version = 1
-    num_epochs = 5
-    n_classes = 4
+    version = 1  # 조정 부분
+    num_epochs = 5  # 조정 부분
 
-    root_dirs = ['./data/query_img/']
-    file_names = ['query']
-    for i, root_dir, file_name in zip(range(1), root_dirs, file_names):
-        dataset, testloader = data_load(root_dir)
+    # parser 생성
+    parser = argparse.ArgumentParser()
 
-        dataset_sizes = len(dataset)
-        class_names = dataset.classes
-        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    # 인자 조건 추가
+    parser.add_argument('--data', type=str, default='both',
+                        choices=['both', 'normal'],
+                        help='what is the data needed in your task?')
 
-        ################
-        # load model
-        wts_name = 'weights_both_ver{} (epochs={}).pth'.format(version, num_epochs)
-        model = load_model(wts_name, n_classes)
-        model.eval()
+    # parsing 후 저장
+    args = parser.parse_args()
+    arg_data = args.data
 
-        if torch.cuda.is_available():
-            model.cuda()
+    # 데이터 로드
+    root_dir = './data/query_img/'
+    dataset, testloader = load_data(root_dir)
 
-        # test
-        accuracy, fvs, label_epoch, predicted = test(model, testloader)
+    dataset_sizes = len(dataset)
+    class_names = dataset.classes
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-        ################
-        # fvs 저장
-        fvs_list = list(map(lambda x: fvs[x].tolist(), range(len(fvs))))  # 추가 부분
-        label_item = list(map(lambda x: label_epoch[x].item(), range(len(label_epoch))))  # 추가 부분
+    ################
+    # load model
+    if arg_data == 'both':
+        n_classes = 4
+    else:
+        n_classes = 2
+    wts_name = 'weights_{}_ver{} (epochs={}).pth'.format(arg_data, version, num_epochs)
+    model = load_model(wts_name, n_classes)
+    model.eval()
 
-        fvs_array = np.array(fvs_list[:])
-        label_array = np.array(label_item[:])
+    if torch.cuda.is_available():
+        model.cuda()
 
-        fvs_save_path = './fvs/'
-        dir_path = fvs_save_path + 'fvs_both_ver{}'.format(version)
-        if not os.path.isdir(dir_path):
-            os.mkdir(dir_path)
+    # test
+    accuracy, fvs, label_epoch, predicted = test(model, testloader)
 
-        np.save(os.path.join(dir_path, 'fvs_{}_ver{}'.format(file_name, version)), fvs_array)
-        if i == 0:
-            np.save(os.path.join(dir_path, 'label_{}_ver{}'.format(file_name, version)), predicted.cpu().numpy())
-        else:
-            np.save(os.path.join(dir_path, 'label_{}_ver{}'.format(file_name, version)), label_array)
+    ################
+    # fvs 저장
+    fvs_list = list(map(lambda x: fvs[x].tolist(), range(len(fvs))))  # 추가 부분
+    label_item = list(map(lambda x: label_epoch[x].item(), range(len(label_epoch))))  # 추가 부분
 
-        ################
-        # if i == 0:
-        #     # label
-        #     class_names_df = pd.DataFrame(class_names, columns=['label'])
-        #     x = pd.read_csv(os.path.join(dir_path, 'class_names.csv'))
-        #     x2 = pd.concat([x, class_names_df])
-        #     x2.to_csv(os.path.join(dir_path, 'class_names.csv'), index=False)
+    fvs_array = np.array(fvs_list[:])
+    label_array = np.array(label_item[:])
+
+    fvs_save_path = './fvs/'
+    dir_path = fvs_save_path + 'fvs_{}_ver{}'.format(arg_data, version)
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
+
+    file_name = 'query'
+    np.save(os.path.join(dir_path, 'fvs_{}_ver{}'.format(file_name, version)), fvs_array)
+    np.save(os.path.join(dir_path, 'label_{}_ver{}'.format(file_name, version)), predicted.cpu().numpy())
 
 
 
