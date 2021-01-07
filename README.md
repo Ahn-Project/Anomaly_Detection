@@ -77,7 +77,7 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
         
    * '--data both': normal, abnormal 데이터 모두 사용 (default)   
    * '--data normal': normal 데이터만 사용  
-   * '--dim nd': n-dim feature-vector 사용한 유사도 계산 (default   
+   * '--dim nd': n-dim feature-vector 사용한 유사도 계산 (default)   
    * '--dim 2d': n-dim feature-vector에 tsne를 적용한 embedding vector 기반 유사도 계산
       
       
