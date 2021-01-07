@@ -41,11 +41,14 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
     
 #### 1. 데이터 준비
 
-   1.1 다운로드 (https://conferences.mpi-inf.mpg.de/dagm/2007/prizes.html)
+   ##### 1.1 다운로드 
+   (https://conferences.mpi-inf.mpg.de/dagm/2007/prizes.html)
   
-   1.2 디렉토리 구조 설정 
-     - 아래 경로에 있는 'DAGM2007.zip'의 디렉토리 구조와 동일하게 워킹 디렉토리 구조 설정
-       (https://github.com/Ahn-Project/Anomaly_Detection/blob/dagm2007/data/DAGM2007.zip)
+   ##### 1.2 디렉토리 구조 설정 
+   
+   - 아래 경로에 있는 'DAGM2007.zip'의 디렉토리 구조와 동일하게 워킹 디렉토리 구조 설정
+   
+     (https://github.com/Ahn-Project/Anomaly_Detection/blob/dagm2007/data/DAGM2007.zip)
 
 
 #### 2. 특성 벡터 추출
@@ -78,7 +81,7 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
    * '--dim 2d': n-dim feature-vector에 tsne를 적용한 embedding vector 기반 유사도 계산
       
       
-  ## 'main.py' 실행    
+   ##### 'main.py' 실행    
         
     python3 main.py
     python3 main.py --dim 2d
