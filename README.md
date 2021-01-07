@@ -53,13 +53,13 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
         * '--data both': normal, abnormal 데이터 모두 사용 (default)
         * '--data normal': normal 데이터만 사용
 
-    # 2.1 'train.py' 실행
+    ### 2.1 'train.py' 실행
     
         python3 train.py    # normal, abnormal 데이터 모두 사용
         
         python3 train.py --data normal    # normal 데이터만 사용
      
-    # 2.2 'fvs_query.py' 실행 
+    ### 2.2 'fvs_query.py' 실행 
     
         python3 fvs_query.py    # normal, abnormal 데이터 모두 사용    
         
