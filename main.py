@@ -87,10 +87,7 @@ if __name__ == "__main__":
     version = 1  # 조정 부분
     fvs_path = './fvs/fvs_{}_ver{}/'.format(arg_data, version)
     fvs, labels, fvs_query, label_query = load_fvs(version, fvs_path, arg_data)
-    if arg_data == 'nd':
-        scores_all = score_of_query(fvs, labels, fvs_query, label_query, arg_dim)
-    else:
-        scores_all = score_of_query(fvs, labels, fvs_query, label_query, arg_dim)
+    scores_all = score_of_query(fvs, labels, fvs_query, label_query, arg_dim)
 
     # box-plot
     fig, axes = plt.subplots(1, 4)
