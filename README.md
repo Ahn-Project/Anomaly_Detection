@@ -51,27 +51,7 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
      (https://github.com/Ahn-Project/Anomaly_Detection/blob/dagm2007/data/DAGM2007.zip)
 
 
-#### 2. 특성 벡터 추출
-
-   *** 전달 인자(argument) 1개 존재: --data
-    
-   * '--data both': normal, abnormal 데이터 모두 사용 (default)        
-   * '--data normal': normal 데이터만 사용
-
-   ##### 2.1 'train.py' 실행
-    
-        python3 train.py    # normal, abnormal 데이터 모두 사용
-        
-        python3 train.py --data normal    # normal 데이터만 사용
-     
-   ##### 2.2 'fvs_query.py' 실행 
-    
-        python3 fvs_query.py    # normal, abnormal 데이터 모두 사용    
-        
-        python3 fvs_query.py --data normal      # normal 데이터만 사용    
-             
-
-#### 3. 이미지 임베딩 및 유사도 측정 / 시각화
+#### 2. 이미지 유사도 측정 / 시각화
 
    *** 전달 인자(argument) 2개 존재: '--data', '--dim'
         
