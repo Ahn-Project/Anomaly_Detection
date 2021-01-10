@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import torch
 import os
+from train import load_trainset, save_fvs, run
+from fvs_query import load_testset, save_fvsquery
 from embedding import tsne, tsne_centroid
 from similarity import cal_score, cal_score_tsne
 import argparse
@@ -63,10 +66,14 @@ def score_of_query(fvs, labels, fvs_query, label_query, arg_dim):
                 print('similarity between query_img and normal_img of class{} : different'.format(lq))
 
         scores_all.append(similarity_scores)
-    return scores_all
+    return scores_all, score_query
 
 
 if __name__ == "__main__":
+    version = 0  # 조정 부분
+    run()
+    num_epochs = 5  # 조정 부분
+
     # parser 생성
     parser = argparse.ArgumentParser()
 
@@ -83,11 +90,33 @@ if __name__ == "__main__":
     arg_data = args.data
     arg_dim = args.dim
 
-    # score 계산
-    version = 1  # 조정 부분
+    # n_classes 할당
+    if arg_data == 'both':
+        n_classes = 4   # 조정 부분
+    else:
+        n_classes = 2   # 조정 부분
+
+    # train 후 fvs 저장
     fvs_path = './fvs/fvs_{}_ver{}/'.format(arg_data, version)
+    weight_path = './weights/weights_{}_ver{} (epochs={}).pth'.format(arg_data, version, num_epochs)
+    if not (os.path.isdir(fvs_path) and os.path.isfile(weight_path)):
+        trainset, train_loader = load_trainset(arg_data)
+
+        trainset_sizes = {x: len(trainset[x]) for x in ['train', 'val']}
+        class_names = trainset['train'].classes
+        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+        save_fvs(train_loader, trainset_sizes, class_names, n_classes, device, arg_data, version, num_epochs)
+
+    # fvs_query 저장
+    test_dir = './data/query_img/'
+    testset, test_loader = load_testset(test_dir)
+
+    save_fvsquery(test_loader, n_classes, arg_data, version, num_epochs)
+
+    # score 계산
     fvs, labels, fvs_query, label_query = load_fvs(version, fvs_path, arg_data)
-    scores_all = score_of_query(fvs, labels, fvs_query, label_query, arg_dim)
+    scores_all, score_query = score_of_query(fvs, labels, fvs_query, label_query, arg_dim)
 
     # box-plot
     fig, axes = plt.subplots(1, 4)
