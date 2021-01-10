@@ -35,8 +35,6 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 5. Visualization 
 
 ## Usage
-
-   *** 2,3번 python 파일 내 version 변수 일치 필요
     
     
 #### 1. 데이터 준비
@@ -61,7 +59,9 @@ Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
    * '--dim 2d': n-dim feature-vector에 tsne를 적용한 embedding vector 기반 유사도 계산
       
       
-   ##### 'main.py' 실행    
+   ##### 'main.py' 실행  
+      
+    # main.py 내 'version'(L73), 'num_epochs'(L75), n_classes(L95,L97) 조정 필요
         
     python3 main.py
     python3 main.py --dim 2d
