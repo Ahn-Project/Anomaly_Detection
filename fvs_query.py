@@ -19,7 +19,7 @@ import argparse
 
 
 ##########################################################
-def load_data(root_dir):
+def load_testset(root_dir):
     data_transforms = transforms.Compose([
         transforms.Resize(224),
         transforms.ToTensor(),
@@ -44,7 +44,15 @@ def load_model(wts_name, n_classes):
     return model
 
 
-def test(model, testLoader):
+def test(testloader, n_classes, arg_data, version, num_epochs):
+    # load model
+    wts_name = 'weights_{}_ver{} (epochs={}).pth'.format(arg_data, version, num_epochs)
+    model = load_model(wts_name, n_classes)
+    model.eval()
+
+    if torch.cuda.is_available():
+        model.cuda()
+
     correct = 0
     total = 0
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -52,7 +60,7 @@ def test(model, testLoader):
 
     fvs, label_epoch = [], []  # 추가 부분
     with torch.no_grad():
-        for i, data in enumerate(testLoader):
+        for i, data in enumerate(testloader):
             inputs, labels = data[0].to(device), data[1].to(device)
             outputs, fv = model(inputs)
             _, predicted = torch.max(outputs.data, 1)
@@ -70,49 +78,9 @@ def test(model, testLoader):
     return accuracy, fvs, label_epoch, predicted
 
 
-##########################################################
-### weight Downloading: "https://download.pytorch.org/models/resnet18-5c106cde.pth" to C:\Users\neouly08/.cache\torch\hub\checkpoints\resnet18-5c106cde.pth
-
-
-if __name__ == "__main__":
-    version = 1  # 조정 부분
-    num_epochs = 5  # 조정 부분
-
-    # parser 생성
-    parser = argparse.ArgumentParser()
-
-    # 인자 조건 추가
-    parser.add_argument('--data', type=str, default='both',
-                        choices=['both', 'normal'],
-                        help='what is the data needed in your task?')
-
-    # parsing 후 저장
-    args = parser.parse_args()
-    arg_data = args.data
-
-    # 데이터 로드
-    root_dir = './data/query_img/'
-    dataset, testloader = load_data(root_dir)
-
-    dataset_sizes = len(dataset)
-    class_names = dataset.classes
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
-    ################
-    # load model
-    if arg_data == 'both':
-        n_classes = 4
-    else:
-        n_classes = 2
-    wts_name = 'weights_{}_ver{} (epochs={}).pth'.format(arg_data, version, num_epochs)
-    model = load_model(wts_name, n_classes)
-    model.eval()
-
-    if torch.cuda.is_available():
-        model.cuda()
-
+def save_fvsquery(testloader, n_classes, arg_data, version, num_epochs):
     # test
-    accuracy, fvs, label_epoch, predicted = test(model, testloader)
+    accuracy, fvs, label_epoch, predicted = test(testloader, n_classes, arg_data, version, num_epochs)
 
     ################
     # fvs 저장
@@ -130,6 +98,9 @@ if __name__ == "__main__":
     file_name = 'query'
     np.save(os.path.join(dir_path, 'fvs_{}_ver{}'.format(file_name, version)), fvs_array)
     np.save(os.path.join(dir_path, 'label_{}_ver{}'.format(file_name, version)), predicted.cpu().numpy())
+
+
+
 
 
 
