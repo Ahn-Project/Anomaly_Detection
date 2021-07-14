@@ -1,5 +1,9 @@
 # README.md
 
+![image](https://user-images.githubusercontent.com/43360435/125564854-adbdf389-7d7a-4b3e-876e-4ebc733ae568.png)
+
+
+
 ## Project Name
 Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 
