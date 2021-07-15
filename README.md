@@ -8,7 +8,7 @@
 Resnet기반 이미지 임베딩을 통한 DAGM2007 이미지 유사도 분석
 
 
-#### -- Project Status: Continue
+#### -- Project Status: Completed
 
 ## Project Objective
 * 이미지 임베딩
